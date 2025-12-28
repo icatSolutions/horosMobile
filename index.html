@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+
+  <title>Horos Mobile → Falcon</title>
+
+  <!-- Meta refresh fallback (kept in sync by JS on load) -->
+  <meta id="metaRefresh" http-equiv="refresh" content="4;url=https://www.falcon-viewer.com" />
+
+  <style>
+    :root {
+      --bg0: #060712;
+      --bg1: #0a0b1a;
+      --card: rgba(255, 255, 255, 0.07);
+      --card2: rgba(255, 255, 255, 0.10);
+      --stroke: rgba(255, 255, 255, 0.14);
+      --text: rgba(255, 255, 255, 0.92);
+      --muted: rgba(255, 255, 255, 0.66);
+      --muted2: rgba(255, 255, 255, 0.52);
+      --shadow: rgba(0, 0, 0, 0.35);
+
+      /* Accent: adjust to match Falcon brand */
+      --accent: #7c3aed; /* violet */
+      --accent2: #22d3ee; /* cyan */
+
+      --radius: 22px;
+      --maxw: 980px;
+
+      --easeOut: cubic-bezier(.16, 1, .3, 1);
+      --easeInOut: cubic-bezier(.4, 0, .2, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 20% 15%, rgba(124, 58, 237, 0.20), transparent 60%),
+                  radial-gradient(1000px 700px at 85% 20%, rgba(34, 211, 238, 0.16), transparent 55%),
+                  linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x: hidden;
+    }
+
+    /* Subtle animated background shapes */
+    .bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    /* Keynote-style animated mesh gradient */
+    .mesh {
+      position: absolute;
+      inset: -35%;
+      background:
+        radial-gradient(1200px 700px at 18% 18%, rgba(124,58,237,0.32), transparent 60%),
+        radial-gradient(1100px 720px at 86% 22%, rgba(34,211,238,0.26), transparent 62%),
+        radial-gradient(1100px 760px at 55% 92%, rgba(124,58,237,0.18), transparent 64%),
+        conic-gradient(from 180deg at 50% 50%, rgba(124,58,237,0.10), rgba(34,211,238,0.08), rgba(124,58,237,0.10));
+      filter: blur(28px) saturate(1.06);
+      opacity: 0.9;
+      transform: translate3d(0,0,0);
+      animation: meshShift 12s var(--easeInOut) infinite alternate;
+    }
+
+    @keyframes meshShift {
+      from { transform: translate3d(-2.6%, -1.6%, 0) scale(1.02); }
+      to   { transform: translate3d(2.6%, 2.2%, 0) scale(1.07); }
+    }
+
+    /* Canvas FX overlay: subtle particles + light streaks */
+    .fx {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.95;
+    }
+
+    .orb {
+      position: absolute;
+      width: min(46vw, 520px);
+      height: min(46vw, 520px);
+      border-radius: 50%;
+      filter: blur(38px);
+      opacity: 0.55;
+      transform: translate3d(0,0,0);
+      mix-blend-mode: screen;
+    }
+
+    .orb.a {
+      left: -12vw;
+      top: -14vw;
+      background: radial-gradient(circle at 30% 30%, rgba(124,58,237,0.70), rgba(124,58,237,0.02) 62%);
+      animation: floatA 10s var(--easeInOut) infinite alternate;
+    }
+
+    .orb.b {
+      right: -16vw;
+      top: -10vw;
+      background: radial-gradient(circle at 35% 35%, rgba(34,211,238,0.62), rgba(34,211,238,0.02) 62%);
+      animation: floatB 12s var(--easeInOut) infinite alternate;
+    }
+
+    .orb.c {
+      left: 18vw;
+      bottom: -18vw;
+      background: radial-gradient(circle at 45% 45%, rgba(124,58,237,0.48), rgba(34,211,238,0.02) 70%);
+      animation: floatC 14s var(--easeInOut) infinite alternate;
+      opacity: 0.42;
+    }
+
+    @keyframes floatA {
+      from { transform: translate3d(0,0,0) scale(1); }
+      to   { transform: translate3d(3vw, 2vw, 0) scale(1.06); }
+    }
+    @keyframes floatB {
+      from { transform: translate3d(0,0,0) scale(1); }
+      to   { transform: translate3d(-2.5vw, 3.2vw, 0) scale(1.05); }
+    }
+    @keyframes floatC {
+      from { transform: translate3d(0,0,0) scale(1); }
+      to   { transform: translate3d(2vw, -2vw, 0) scale(1.08); }
+    }
+
+    /* Soft grain for depth */
+    .grain {
+      position: fixed;
+      inset: -30%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");
+      opacity: 0.12;
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      z-index: 1;
+      transform: rotate(12deg);
+    }
+
+    /* Layout */
+    .wrap {
+      position: relative;
+      z-index: 2;
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--maxw);
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: stretch;
+      perspective: 1200px;
+      transform-style: preserve-3d;
+    }
+
+    @media (max-width: 860px) {
+      .container { grid-template-columns: 1fr; gap: 18px; }
+    }
+
+    .card {
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.04));
+      border: 1px solid var(--stroke);
+      box-shadow:
+        0 24px 70px var(--shadow),
+        0 0 0 1px rgba(255,255,255,0.03) inset;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      overflow: hidden;
+      position: relative;
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(900px 300px at 20% 0%, rgba(124,58,237,0.24), transparent 55%),
+        radial-gradient(700px 280px at 90% 10%, rgba(34,211,238,0.20), transparent 55%),
+        radial-gradient(900px 420px at 50% 120%, rgba(255,255,255,0.06), transparent 60%);
+      opacity: 0.95;
+      pointer-events: none;
+    }
+
+    /* Animated edge glow for keynote-style depth */
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: calc(var(--radius) + 1px);
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.28), rgba(34,211,238,0.22), rgba(255,255,255,0.08));
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.52;
+      pointer-events: none;
+      animation: edgePulse 4.6s var(--easeInOut) infinite;
+    }
+
+    @keyframes edgePulse {
+      0%   { opacity: 0.36; }
+      50%  { opacity: 0.62; }
+      100% { opacity: 0.40; }
+    }
+
+    .cardInner {
+      position: relative;
+      padding: 26px 26px 22px 26px;
+    }
+
+    @media (max-width: 480px) {
+      .wrap { padding: 18px; }
+      .cardInner { padding: 22px 18px 18px 18px; }
+    }
+
+    /* Hero entrance */
+    .hero {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 600ms var(--easeOut), transform 700ms var(--easeOut);
+    }
+
+    .hero.is-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Optional logo mark */
+    .logoRow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.18), transparent 55%),
+        linear-gradient(135deg, rgba(124,58,237,0.85), rgba(34,211,238,0.85));
+      box-shadow:
+        0 16px 34px rgba(124,58,237,0.18),
+        0 10px 26px rgba(34,211,238,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mark::after {
+      content: "";
+      position: absolute;
+      inset: -60% -60% auto auto;
+      width: 160%;
+      height: 160%;
+      background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.28), transparent 55%);
+      transform: rotate(18deg);
+      opacity: 0.7;
+    }
+
+    .brandName {
+      font-size: 14px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    h1 {
+      margin: 10px 0 10px 0;
+      font-size: clamp(28px, 3.6vw, 44px);
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      position: relative;
+    }
+
+    /* Keynote-style headline shimmer on entrance */
+    h1::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg,
+        transparent 0%,
+        rgba(255,255,255,0.00) 35%,
+        rgba(255,255,255,0.22) 50%,
+        rgba(255,255,255,0.00) 65%,
+        transparent 100%
+      );
+      transform: translateX(-55%);
+      mix-blend-mode: overlay;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .hero.is-in h1::after {
+      opacity: 1;
+      animation: headlineShine 2200ms var(--easeOut) 220ms 1;
+    }
+
+    @keyframes headlineShine {
+      from { transform: translateX(-55%); }
+      to   { transform: translateX(55%); }
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(15px, 1.7vw, 18px);
+      line-height: 1.5;
+      max-width: 55ch;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+      align-items: center;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.92), rgba(34,211,238,0.92));
+      color: rgba(255,255,255,0.94);
+      font-weight: 650;
+      letter-spacing: 0.01em;
+      box-shadow:
+        0 18px 44px rgba(124,58,237,0.20),
+        0 16px 44px rgba(34,211,238,0.14);
+      position: relative;
+      overflow: hidden;
+      transition: transform 180ms var(--easeOut), filter 200ms var(--easeOut), box-shadow 250ms var(--easeOut);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid rgba(255,255,255,0.72);
+      outline-offset: 3px;
+    }
+
+    .btn:hover { transform: translateY(-1px); filter: saturate(1.05) brightness(1.05); }
+    .btn:active { transform: translateY(0px) scale(0.99); }
+
+    /* Subtle shine sweep */
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: -40% -70% -40% -70%;
+      background: linear-gradient(120deg,
+        transparent 30%,
+        rgba(255,255,255,0.22) 45%,
+        transparent 60%
+      );
+      transform: translateX(-40%) rotate(0deg);
+      opacity: 0;
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+      animation: shine 900ms var(--easeOut) 1;
+    }
+
+    @keyframes shine {
+      from { transform: translateX(-40%); }
+      to { transform: translateX(40%); }
+    }
+
+    .secondary {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .secondary a {
+      color: rgba(255,255,255,0.80);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.22);
+      transition: border-color 180ms var(--easeOut), color 180ms var(--easeOut);
+      word-break: break-word;
+    }
+
+    .secondary a:hover {
+      color: rgba(255,255,255,0.92);
+      border-bottom-color: rgba(255,255,255,0.40);
+    }
+
+    /* Right-side countdown card */
+    .side {
+      display: grid;
+      align-content: center;
+      gap: 14px;
+      min-height: 240px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted);
+      width: fit-content;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 6px rgba(124,58,237,0.12);
+    }
+
+    .count {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .countNum {
+      font-size: 64px;
+      font-weight: 720;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .countLabel {
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .progressTrack {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.12);
+      overflow: hidden;
+    }
+
+    .progressFill {
+      width: 100%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform-origin: left center;
+      transform: scaleX(1);
+      box-shadow: 0 0 22px rgba(124,58,237,0.22);
+    }
+
+    .micro {
+      color: var(--muted2);
+      font-size: 14px;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    /* Exit fade */
+    .is-exiting {
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 220ms var(--easeOut), transform 220ms var(--easeOut);
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .mesh { animation: none !important; }
+      .orb { animation: none !important; }
+      .hero { transition: none !important; }
+      .btn, .secondary a { transition: none !important; }
+      .btn::before { animation: none !important; }
+      .card::after { animation: none !important; }
+      h1::after { animation: none !important; opacity: 0 !important; }
+      .fx { display: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="mesh"></div>
+    <canvas id="fxCanvas" class="fx"></canvas>
+    <div class="orb a"></div>
+    <div class="orb b"></div>
+    <div class="orb c"></div>
+  </div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <section class="container hero" id="hero">
+      <!-- Left: marketing copy -->
+      <div class="card">
+        <div class="cardInner">
+          <div class="logoRow">
+            <div class="mark" aria-hidden="true"></div>
+            <div class="brandName">Horos Mobile → Falcon Mx</div>
+          </div>
+
+          <!-- Picked headline option #1 (best clarity in 4 seconds) -->
+          <h1>Horos Mobile is now Falcon Mx.</h1>
+          <p class="sub">We’ve rebranded to continue building the Falcon suite. You’re heading to the official Falcon website.</p>
+
+          <div class="actions">
+            <button class="btn" id="goNow" type="button">
+              Go now
+              <span aria-hidden="true">↗</span>
+            </button>
+            <div class="secondary">
+              If nothing happens, open <a id="backupLink" href="https://www.falcon-viewer.com" rel="noopener">falcon-viewer.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: countdown / progress -->
+      <div class="card">
+        <div class="cardInner side">
+          <div class="pill">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="statusText">Redirecting you now.</span>
+          </div>
+
+          <div class="count" aria-live="polite" aria-atomic="true">
+            <div class="countNum" id="countNum">4</div>
+            <div class="countLabel">seconds</div>
+          </div>
+
+          <div class="progressTrack" role="progressbar" aria-label="Redirect progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="progressFill" id="progressFill"></div>
+          </div>
+
+          <div class="micro" id="microcopy">Taking you there in 4 seconds…</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /**
+     * Config (adjust here)
+     */
+    const REDIRECT_URL = "https://www.falcon-viewer.com";
+    const REDIRECT_DELAY_MS = 4000;
+
+    // Keep meta-refresh fallback in sync
+    const metaRefresh = document.getElementById("metaRefresh");
+    if (metaRefresh) {
+      const seconds = Math.max(0, Math.round(REDIRECT_DELAY_MS / 1000));
+      metaRefresh.setAttribute("content", `${seconds};url=${REDIRECT_URL}`);
+    }
+
+    const hero = document.getElementById("hero");
+    const goNow = document.getElementById("goNow");
+    const backupLink = document.getElementById("backupLink");
+    const countNum = document.getElementById("countNum");
+    const progressFill = document.getElementById("progressFill");
+    const statusText = document.getElementById("statusText");
+    const microcopy = document.getElementById("microcopy");
+    const progressTrack = document.querySelector(".progressTrack");
+
+    if (backupLink) backupLink.href = REDIRECT_URL;
+
+    const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Keynote-style background FX (canvas particles + light streaks)
+    (function initCanvasFX() {
+      const canvas = document.getElementById("fxCanvas");
+      if (!canvas || prefersReduced) return;
+
+      const ctx = canvas.getContext("2d", { alpha: true });
+      if (!ctx) return;
+
+      let w = 0, h = 0;
+      let dpr = Math.min(2, window.devicePixelRatio || 1);
+      const particles = [];
+      const streaks = [];
+
+      function resize() {
+        const rect = canvas.getBoundingClientRect();
+        w = Math.max(1, Math.floor(rect.width));
+        h = Math.max(1, Math.floor(rect.height));
+        dpr = Math.min(2, window.devicePixelRatio || 1);
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function rand(a, b) { return a + Math.random() * (b - a); }
+
+      function seed() {
+        particles.length = 0;
+        streaks.length = 0;
+
+        const count = Math.round((w * h) / 24000);
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: rand(0, w),
+            y: rand(0, h),
+            r: rand(0.6, 1.9),
+            a: rand(0.08, 0.26),
+            vx: rand(-0.10, 0.12),
+            vy: rand(-0.10, 0.12),
+            t: rand(0, Math.PI * 2),
+            tw: rand(0.6, 1.6)
+          });
+        }
+
+        const sCount = Math.max(6, Math.round(w / 200));
+        for (let i = 0; i < sCount; i++) {
+          streaks.push({
+            x: rand(-w * 0.5, w),
+            y: rand(0, h),
+            len: rand(w * 0.22, w * 0.46),
+            lw: rand(1.0, 2.6),
+            a: rand(0.05, 0.12),
+            sp: rand(0.10, 0.26),
+            phase: rand(0, Math.PI * 2)
+          });
+        }
+      }
+
+      function draw(t) {
+        ctx.clearRect(0, 0, w, h);
+
+        // Vignette
+        const v = ctx.createRadialGradient(w * 0.5, h * 0.5, 0, w * 0.5, h * 0.5, Math.max(w, h) * 0.72);
+        v.addColorStop(0, "rgba(0,0,0,0)");
+        v.addColorStop(1, "rgba(0,0,0,0.20)");
+        ctx.fillStyle = v;
+        ctx.fillRect(0, 0, w, h);
+
+        // Streaks
+        for (const s of streaks) {
+          const wobble = Math.sin((t * 0.0013) + s.phase) * 10;
+          s.x += s.sp;
+          if (s.x - s.len > w * 1.25) s.x = -w * 0.45;
+
+          const x0 = s.x - s.len;
+          const y0 = s.y + wobble;
+          const x1 = s.x;
+          const y1 = s.y + wobble;
+
+          const g = ctx.createLinearGradient(x0, y0, x1, y1);
+          g.addColorStop(0, "rgba(124,58,237,0)");
+          g.addColorStop(0.45, `rgba(124,58,237,${s.a})`);
+          g.addColorStop(0.75, `rgba(34,211,238,${s.a * 0.9})`);
+          g.addColorStop(1, "rgba(34,211,238,0)");
+
+          ctx.strokeStyle = g;
+          ctx.lineWidth = s.lw;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(x0, y0);
+          ctx.lineTo(x1, y1);
+          ctx.stroke();
+        }
+
+        // Particles
+        for (const p of particles) {
+          p.t += 0.016 * p.tw;
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < -24) p.x = w + 24;
+          if (p.x > w + 24) p.x = -24;
+          if (p.y < -24) p.y = h + 24;
+          if (p.y > h + 24) p.y = -24;
+
+          const tw = (Math.sin(p.t) * 0.5 + 0.5);
+          const a = p.a * (0.55 + tw * 0.85);
+
+          const rg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
+          rg.addColorStop(0, `rgba(255,255,255,${a})`);
+          rg.addColorStop(0.35, `rgba(34,211,238,${a * 0.52})`);
+          rg.addColorStop(1, "rgba(124,58,237,0)");
+
+          ctx.fillStyle = rg;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * (0.9 + tw * 0.6), 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      const onResize = () => { resize(); seed(); };
+      window.addEventListener("resize", onResize, { passive: true });
+      resize();
+      seed();
+      requestAnimationFrame(draw);
+    })();
+
+    // Entrance
+    requestAnimationFrame(() => {
+      hero?.classList.add("is-in");
+    });
+
+    // Keynote-style parallax and card tilt
+    (function initParallax() {
+      if (prefersReduced) return;
+
+      const cards = Array.from(document.querySelectorAll(".card"));
+      const orbs = Array.from(document.querySelectorAll(".orb"));
+      const mesh = document.querySelector(".mesh");
+
+      let targetX = 0;
+      let targetY = 0;
+      let curX = 0;
+      let curY = 0;
+
+      function onMove(clientX, clientY) {
+        const nx = (clientX / window.innerWidth) * 2 - 1;
+        const ny = (clientY / window.innerHeight) * 2 - 1;
+        targetX = nx;
+        targetY = ny;
+      }
+
+      window.addEventListener("pointermove", (e) => onMove(e.clientX, e.clientY), { passive: true });
+
+      // Mobile tilt if available
+      window.addEventListener("deviceorientation", (e) => {
+        if (e.beta == null || e.gamma == null) return;
+        const nx = Math.max(-1, Math.min(1, e.gamma / 25));
+        const ny = Math.max(-1, Math.min(1, e.beta / 25));
+        targetX = nx;
+        targetY = ny;
+      }, { passive: true });
+
+      function loop() {
+        // Smooth lerp
+        curX += (targetX - curX) * 0.06;
+        curY += (targetY - curY) * 0.06;
+
+        const rx = (-curY * 4.2);
+        const ry = (curX * 5.2);
+
+        // Cards tilt slightly with depth
+        for (let i = 0; i < cards.length; i++) {
+          const depth = i === 0 ? 1 : 0.85;
+          cards[i].style.transform = `rotateX(${rx * depth}deg) rotateY(${ry * depth}deg) translateZ(0)`;
+        }
+
+        // Orbs drift a bit more
+        for (let i = 0; i < orbs.length; i++) {
+          const d = (i + 1) * 10;
+          orbs[i].style.transform = `translate3d(${curX * d}px, ${curY * d}px, 0)`;
+        }
+
+        // Mesh shifts subtly
+        if (mesh) {
+          mesh.style.transform = `translate3d(${curX * 18}px, ${curY * 14}px, 0) scale(1.05)`;
+        }
+
+        requestAnimationFrame(loop);
+      }
+
+      requestAnimationFrame(loop);
+    })();
+
+    let redirected = false;
+    let rafId = 0;
+    let tickId = 0;
+
+    function doRedirect() {
+      if (redirected) return;
+      redirected = true;
+
+      statusText && (statusText.textContent = "Opening Falcon…");
+      microcopy && (microcopy.textContent = "Redirecting now.");
+
+      // Quick exit fade (skip if reduced motion)
+      if (!prefersReduced) {
+        hero?.classList.add("is-exiting");
+      }
+
+      // Give the fade a moment, then navigate
+      const exitDelay = prefersReduced ? 0 : 160;
+      window.setTimeout(() => {
+        window.location.assign(REDIRECT_URL);
+      }, exitDelay);
+    }
+
+    function clamp01(v) {
+      return Math.max(0, Math.min(1, v));
+    }
+
+    function setProgress(p01) {
+      const pct = Math.round(p01 * 100);
+      if (progressFill) progressFill.style.transform = `scaleX(${1 - p01})`; // drains left→right visually
+      if (progressTrack) progressTrack.setAttribute("aria-valuenow", String(pct));
+    }
+
+    function setSecondsLeft(msLeft) {
+      const s = Math.max(0, Math.ceil(msLeft / 1000));
+      if (countNum) countNum.textContent = String(s);
+      if (microcopy) microcopy.textContent = `Taking you there in ${s} second${s === 1 ? "" : "s"}…`;
+    }
+
+    const start = performance.now();
+
+    // Progress animation synced to delay
+    function animate() {
+      const now = performance.now();
+      const elapsed = now - start;
+      const p = clamp01(elapsed / REDIRECT_DELAY_MS);
+      setProgress(p);
+      if (p < 1 && !redirected) {
+        rafId = requestAnimationFrame(animate);
+      }
+    }
+
+    // Seconds tick
+    function tick() {
+      const now = performance.now();
+      const left = Math.max(0, REDIRECT_DELAY_MS - (now - start));
+      setSecondsLeft(left);
+      if (left <= 0) {
+        clearInterval(tickId);
+        doRedirect();
+      }
+    }
+
+    // Start
+    setProgress(0);
+    setSecondsLeft(REDIRECT_DELAY_MS);
+
+    if (!prefersReduced) {
+      rafId = requestAnimationFrame(animate);
+    }
+    tickId = window.setInterval(tick, 200);
+
+    // Button
+    goNow?.addEventListener("click", () => {
+      clearInterval(tickId);
+      cancelAnimationFrame(rafId);
+      doRedirect();
+    });
+
+    // If the page is hidden (tab switch), still redirect reliably
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) return;
+      // no-op
+    });
+
+    // Safety: hard timeout redirect in case timers are throttled
+    window.setTimeout(() => {
+      doRedirect();
+    }, REDIRECT_DELAY_MS + 350);
+  </script>
+</body>
+</html>
