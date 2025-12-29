@@ -7,8 +7,50 @@
 
   <title>Horos Mobile → Falcon</title>
 
-  <!-- Meta refresh fallback (kept in sync by JS on load) -->
+  <!-- Basic SEO -->
+  <meta name="description" content="Horos Mobile has been rebranded as Falcon Mx. You are being redirected to the official Falcon website." />
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+
+  <!-- Canonical: tell search engines the primary destination for this rebrand page -->
+  <link rel="canonical" href="https://www.falcon-viewer.com" />
+
+  <!-- Open Graph (social previews) -->
+  <meta property="og:title" content="Horos Mobile is now Falcon Mx." />
+  <meta property="og:description" content="We’ve rebranded to continue building the Falcon suite. You’re heading to the official Falcon website." />
+  <meta property="og:url" content="https://www.horosmobile.com/" />
+  <meta property="og:type" content="website" />
+  <!-- Optional: set a real image if you have one on falcon-viewer.com -->
+  <!-- <meta property="og:image" content="https://www.falcon-viewer.com/og-image.png" /> -->
+
+  <!-- Twitter/X card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Horos Mobile is now Falcon Mx." />
+  <meta name="twitter:description" content="You’re heading to the official Falcon website." />
+  <!-- Optional -->
+  <!-- <meta name="twitter:image" content="https://www.falcon-viewer.com/og-image.png" /> -->
+
+  <!-- Theme color -->
+  <meta name="theme-color" content="#060712" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+
+  <!-- Meta refresh fallback (JS keeps this in sync on load) -->
   <meta id="metaRefresh" http-equiv="refresh" content="10;url=https://www.falcon-viewer.com" />
+
+  <!-- Structured data (minimal, safe, rebrand context) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Horos Mobile → Falcon",
+    "description": "Horos Mobile has been rebranded as Falcon Mx. Redirecting to the official Falcon website.",
+    "url": "https://www.horosmobile.com/",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Horos Mobile",
+      "url": "https://www.horosmobile.com/"
+    }
+  }
+  </script>
 
   <style>
     :root {
@@ -46,7 +88,6 @@
       overflow-x: hidden;
     }
 
-    /* Subtle animated background shapes */
     .bg {
       position: fixed;
       inset: 0;
@@ -55,7 +96,6 @@
       z-index: 0;
     }
 
-    /* Keynote-style animated mesh gradient */
     .mesh {
       position: absolute;
       inset: -35%;
@@ -75,7 +115,6 @@
       to   { transform: translate3d(2.6%, 2.2%, 0) scale(1.07); }
     }
 
-    /* Canvas FX overlay: subtle particles + light streaks */
     .fx {
       position: absolute;
       inset: 0;
@@ -130,7 +169,6 @@
       to   { transform: translate3d(2vw, -2vw, 0) scale(1.08); }
     }
 
-    /* Soft grain for depth */
     .grain {
       position: fixed;
       inset: -30%;
@@ -142,7 +180,6 @@
       transform: rotate(12deg);
     }
 
-    /* Layout */
     .wrap {
       position: relative;
       z-index: 2;
@@ -194,7 +231,6 @@
       pointer-events: none;
     }
 
-    /* Animated edge glow for keynote-style depth */
     .card::after {
       content: "";
       position: absolute;
@@ -228,7 +264,6 @@
       .cardInner { padding: 22px 18px 18px 18px; }
     }
 
-    /* Hero entrance */
     .hero {
       opacity: 0;
       transform: translateY(10px);
@@ -240,7 +275,6 @@
       transform: translateY(0);
     }
 
-    /* Optional logo mark */
     .logoRow {
       display: flex;
       align-items: center;
@@ -288,7 +322,6 @@
       position: relative;
     }
 
-    /* Keynote-style headline shimmer on entrance */
     h1::after {
       content: "";
       position: absolute;
@@ -363,7 +396,6 @@
     .btn:hover { transform: translateY(-1px); filter: saturate(1.05) brightness(1.05); }
     .btn:active { transform: translateY(0px) scale(0.99); }
 
-    /* Subtle shine sweep */
     .btn::before {
       content: "";
       position: absolute;
@@ -373,7 +405,7 @@
         rgba(255,255,255,0.22) 45%,
         transparent 60%
       );
-      transform: translateX(-40%) rotate(0deg);
+      transform: translateX(-40%);
       opacity: 0;
     }
 
@@ -405,7 +437,6 @@
       border-bottom-color: rgba(255,255,255,0.40);
     }
 
-    /* Right-side countdown card */
     .side {
       display: grid;
       align-content: center;
@@ -479,14 +510,12 @@
       margin-top: 4px;
     }
 
-    /* Exit fade */
     .is-exiting {
       opacity: 0;
       transform: translateY(6px);
       transition: opacity 220ms var(--easeOut), transform 220ms var(--easeOut);
     }
 
-    /* Reduced motion */
     @media (prefers-reduced-motion: reduce) {
       .mesh { animation: none !important; }
       .orb { animation: none !important; }
@@ -512,7 +541,6 @@
 
   <main class="wrap">
     <section class="container hero" id="hero">
-      <!-- Left: marketing copy -->
       <div class="card">
         <div class="cardInner">
           <div class="logoRow">
@@ -520,7 +548,6 @@
             <div class="brandName">Horos Mobile → Falcon Mx</div>
           </div>
 
-          <!-- Picked headline option #1 (best clarity in 4 seconds) -->
           <h1>Horos Mobile is now Falcon Mx.</h1>
           <p class="sub">We’ve rebranded to continue building the Falcon suite. You’re heading to the official Falcon website.</p>
 
@@ -536,7 +563,6 @@
         </div>
       </div>
 
-      <!-- Right: countdown / progress -->
       <div class="card">
         <div class="cardInner side">
           <div class="pill">
@@ -545,7 +571,7 @@
           </div>
 
           <div class="count" aria-live="polite" aria-atomic="true">
-            <div class="countNum" id="countNum">4</div>
+            <div class="countNum" id="countNum">10</div>
             <div class="countLabel">seconds</div>
           </div>
 
@@ -553,7 +579,7 @@
             <div class="progressFill" id="progressFill"></div>
           </div>
 
-          <div class="micro" id="microcopy">Taking you there in 4 seconds…</div>
+          <div class="micro" id="microcopy">Taking you there in 10 seconds…</div>
         </div>
       </div>
     </section>
@@ -586,7 +612,6 @@
 
     const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Keynote-style background FX (canvas particles + light streaks)
     (function initCanvasFX() {
       const canvas = document.getElementById("fxCanvas");
       if (!canvas || prefersReduced) return;
@@ -646,14 +671,12 @@
       function draw(t) {
         ctx.clearRect(0, 0, w, h);
 
-        // Vignette
         const v = ctx.createRadialGradient(w * 0.5, h * 0.5, 0, w * 0.5, h * 0.5, Math.max(w, h) * 0.72);
         v.addColorStop(0, "rgba(0,0,0,0)");
         v.addColorStop(1, "rgba(0,0,0,0.20)");
         ctx.fillStyle = v;
         ctx.fillRect(0, 0, w, h);
 
-        // Streaks
         for (const s of streaks) {
           const wobble = Math.sin((t * 0.0013) + s.phase) * 10;
           s.x += s.sp;
@@ -679,7 +702,6 @@
           ctx.stroke();
         }
 
-        // Particles
         for (const p of particles) {
           p.t += 0.016 * p.tw;
           p.x += p.vx;
@@ -713,12 +735,10 @@
       requestAnimationFrame(draw);
     })();
 
-    // Entrance
     requestAnimationFrame(() => {
       hero?.classList.add("is-in");
     });
 
-    // Keynote-style parallax and card tilt
     (function initParallax() {
       if (prefersReduced) return;
 
@@ -740,7 +760,6 @@
 
       window.addEventListener("pointermove", (e) => onMove(e.clientX, e.clientY), { passive: true });
 
-      // Mobile tilt if available
       window.addEventListener("deviceorientation", (e) => {
         if (e.beta == null || e.gamma == null) return;
         const nx = Math.max(-1, Math.min(1, e.gamma / 25));
@@ -750,26 +769,22 @@
       }, { passive: true });
 
       function loop() {
-        // Smooth lerp
         curX += (targetX - curX) * 0.06;
         curY += (targetY - curY) * 0.06;
 
         const rx = (-curY * 4.2);
         const ry = (curX * 5.2);
 
-        // Cards tilt slightly with depth
         for (let i = 0; i < cards.length; i++) {
           const depth = i === 0 ? 1 : 0.85;
           cards[i].style.transform = `rotateX(${rx * depth}deg) rotateY(${ry * depth}deg) translateZ(0)`;
         }
 
-        // Orbs drift a bit more
         for (let i = 0; i < orbs.length; i++) {
           const d = (i + 1) * 10;
           orbs[i].style.transform = `translate3d(${curX * d}px, ${curY * d}px, 0)`;
         }
 
-        // Mesh shifts subtly
         if (mesh) {
           mesh.style.transform = `translate3d(${curX * 18}px, ${curY * 14}px, 0) scale(1.05)`;
         }
@@ -788,15 +803,11 @@
       if (redirected) return;
       redirected = true;
 
-      statusText && (statusText.textContent = "Opening Falcon…");
-      microcopy && (microcopy.textContent = "Redirecting now.");
+      if (statusText) statusText.textContent = "Opening Falcon…";
+      if (microcopy) microcopy.textContent = "Redirecting now.";
 
-      // Quick exit fade (skip if reduced motion)
-      if (!prefersReduced) {
-        hero?.classList.add("is-exiting");
-      }
+      if (!prefersReduced) hero?.classList.add("is-exiting");
 
-      // Give the fade a moment, then navigate
       const exitDelay = prefersReduced ? 0 : 160;
       window.setTimeout(() => {
         window.location.assign(REDIRECT_URL);
@@ -809,7 +820,7 @@
 
     function setProgress(p01) {
       const pct = Math.round(p01 * 100);
-      if (progressFill) progressFill.style.transform = `scaleX(${1 - p01})`; // drains left→right visually
+      if (progressFill) progressFill.style.transform = `scaleX(${1 - p01})`;
       if (progressTrack) progressTrack.setAttribute("aria-valuenow", String(pct));
     }
 
@@ -821,18 +832,14 @@
 
     const start = performance.now();
 
-    // Progress animation synced to delay
     function animate() {
       const now = performance.now();
       const elapsed = now - start;
       const p = clamp01(elapsed / REDIRECT_DELAY_MS);
       setProgress(p);
-      if (p < 1 && !redirected) {
-        rafId = requestAnimationFrame(animate);
-      }
+      if (p < 1 && !redirected) rafId = requestAnimationFrame(animate);
     }
 
-    // Seconds tick
     function tick() {
       const now = performance.now();
       const left = Math.max(0, REDIRECT_DELAY_MS - (now - start));
@@ -843,26 +850,16 @@
       }
     }
 
-    // Start
     setProgress(0);
     setSecondsLeft(REDIRECT_DELAY_MS);
 
-    if (!prefersReduced) {
-      rafId = requestAnimationFrame(animate);
-    }
+    if (!prefersReduced) rafId = requestAnimationFrame(animate);
     tickId = window.setInterval(tick, 200);
 
-    // Button
     goNow?.addEventListener("click", () => {
       clearInterval(tickId);
       cancelAnimationFrame(rafId);
       doRedirect();
-    });
-
-    // If the page is hidden (tab switch), still redirect reliably
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) return;
-      // no-op
     });
 
     // Safety: hard timeout redirect in case timers are throttled
